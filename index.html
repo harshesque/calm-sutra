@@ -110,6 +110,19 @@
             font-size: 14px;
             color: #A1A1AA;
         }
+                .sound-btn {
+            margin-top: 15px;
+            padding: 6px 14px;
+            font-size: 13px;
+            background-color: transparent;
+            border: 1px solid #3F3F46;
+            color: #A1A1AA;
+        }
+        .sound-btn:hover {
+            color: #FFFFFF;
+            border-color: #71717A;
+            background-color: #36363A;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +145,7 @@
 
     <button id="startBtn" onclick="toggleSession()">Start Session</button>
     <div class="cycle-counter" id="cycleCounter">Cycles completed: 0</div>
+    <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Sound: On</button>
 
 
     <script>
@@ -140,6 +154,37 @@
         let timer;
         let countdownInterval;
         let cycles = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+        }
+
+        function playChime(type) {
+            if (!soundEnabled) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Different calming pitches for Inhale, Hold, and Exhale
+            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396 };
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
+
+            // Soft fade-in and long gentle fade-out like a singing bowl
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.8);
+        }
 
         const circle = document.getElementById('circle');
         const instruction = document.getElementById('instruction');
@@ -204,6 +249,7 @@
         function step(text, duration, scale, callback) {
             if (!isRunning) return;
             instruction.innerText = text;
+            playChime(text);
             
             clearInterval(countdownInterval);
             let secondsLeft = duration / 1000;
