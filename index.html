@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk Reset | Corporate Breathing</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { font-weight: 600; margin-bottom: 5px; color: #0f172a; }
+        p { color: #64748b; margin-bottom: 30px; max-width: 400px; }
+        .controls { margin-bottom: 40px; display: flex; gap: 10px; }
+        button {
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #e2e8f0;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        button.active { background-color: #0284c7; color: white; }
+        button#startBtn { background-color: #0f172a; color: white; margin-top: 30px; padding: 12px 30px; font-size: 16px; }
+        .circle-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .circle {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            border-radius: 50%;
+            transition: transform 4s ease-in-out;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3);
+        }
+        .instruction {
+            position: absolute;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            pointer-events: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>2-Minute Desk Reset</h1>
+    <p>Step away from your inbox. Choose a technique below to lower stress and sharpen your focus.</p>
+
+    <div class="controls">
+        <button id="boxBtn" class="active" onclick="setMode('box')">Box Breathing (Focus)</button>
+        <button id="relaxBtn" onclick="setMode('relax')">4-7-8 (Stress Relief)</button>
+    </div>
+
+    <div class="circle-container">
+        <div class="circle" id="circle"></div>
+        <div class="instruction" id="instruction">Ready</div>
+    </div>
+
+    <button id="startBtn" onclick="toggleSession()">Start Session</button>
+
+    <script>
+        let isRunning = false;
+        let mode = 'box';
+        let timer;
+        const circle = document.getElementById('circle');
+        const instruction = document.getElementById('instruction');
+        const startBtn = document.getElementById('startBtn');
+
+        function setMode(selected) {
+            if (isRunning) toggleSession();
+            mode = selected;
+            document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
+            document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
+            instruction.innerText = "Ready";
+        }
+
+        function toggleSession() {
+            if (isRunning) {
+                isRunning = false;
+                clearTimeout(timer);
+                circle.style.transition = "transform 0.5s ease";
+                circle.style.transform = "scale(1)";
+                instruction.innerText = "Ready";
+                startBtn.innerText = "Start Session";
+            } else {
+                isRunning = true;
+                startBtn.innerText = "Stop";
+                runCycle();
+            }
+        }
+
+        function runCycle() {
+            if (!isRunning) return;
+            if (mode === 'box') {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 4000, 1.7, () => {
+                        step("Exhale", 4000, 1.0, () => {
+                            step("Hold", 4000, 1.0, runCycle);
+                        });
+                    });
+                });
+            } else {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 7000, 1.7, () => {
+                        step("Exhale", 8000, 1.0, runCycle);
+                    });
+                });
+            }
+        }
+
+        function step(text, duration, scale, callback) {
+            if (!isRunning) return;
+            instruction.innerText = text;
+            circle.style.transition = `transform ${duration / 1000}s ease-in-out`;
+            circle.style.transform = `scale(${scale})`;
+            timer = setTimeout(callback, duration);
+        }
+    </script>
+</body>
+</html>
