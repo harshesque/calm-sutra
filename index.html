@@ -76,20 +76,39 @@
             justify-content: center;
         }
         .circle {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             background: radial-gradient(circle at 30% 30%, #FF9E2C, #F08000);
-            border-radius: 50%;
+            border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%;
+            animation: lungMorph 8s ease-in-out infinite;
             transition: transform 4s ease-in-out;
             box-shadow: 0 0 35px rgba(240, 128, 0, 0.45);
         }
+        @keyframes lungMorph {
+            0%, 100% { border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%; }
+            50% { border-radius: 42% 58% 55% 45% / 45% 60% 40% 55%; }
+        }
         .instruction {
             position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             font-size: 20px;
             font-weight: 700;
             color: #FFFFFF;
             pointer-events: none;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        }
+        .timer-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+        .cycle-counter {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #A1A1AA;
         }
     </style>
 </head>
@@ -105,18 +124,28 @@
 
     <div class="circle-container">
         <div class="circle" id="circle"></div>
-        <div class="instruction" id="instruction">Ready</div>
+        <div class="instruction">
+            <span id="instruction">Ready</span>
+            <span class="timer-text" id="timerText"></span>
+        </div>
     </div>
 
     <button id="startBtn" onclick="toggleSession()">Start Session</button>
+    <div class="cycle-counter" id="cycleCounter">Cycles completed: 0</div>
+
 
     <script>
         let isRunning = false;
         let mode = 'box';
         let timer;
+        let countdownInterval;
+        let cycles = 0;
+
         const circle = document.getElementById('circle');
         const instruction = document.getElementById('instruction');
+        const timerText = document.getElementById('timerText');
         const startBtn = document.getElementById('startBtn');
+        const cycleCounter = document.getElementById('cycleCounter');
 
         function setMode(selected) {
             if (isRunning) toggleSession();
@@ -124,21 +153,33 @@
             document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
             document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
             instruction.innerText = "Ready";
+            timerText.innerText = "";
         }
 
         function toggleSession() {
             if (isRunning) {
                 isRunning = false;
                 clearTimeout(timer);
+                clearInterval(countdownInterval);
                 circle.style.transition = "transform 0.5s ease";
                 circle.style.transform = "scale(1)";
                 instruction.innerText = "Ready";
+                timerText.innerText = "";
                 startBtn.innerText = "Start Session";
             } else {
                 isRunning = true;
+                cycles = 0;
+                cycleCounter.innerText = "Cycles completed: 0";
                 startBtn.innerText = "Stop";
                 runCycle();
             }
+        }
+
+        function completeCycle() {
+            if (!isRunning) return;
+            cycles++;
+            cycleCounter.innerText = `Cycles completed: ${cycles}`;
+            runCycle();
         }
 
         function runCycle() {
@@ -147,14 +188,14 @@
                 step("Inhale", 4000, 1.7, () => {
                     step("Hold", 4000, 1.7, () => {
                         step("Exhale", 4000, 1.0, () => {
-                            step("Hold", 4000, 1.0, runCycle);
+                            step("Hold", 4000, 1.0, completeCycle);
                         });
                     });
                 });
             } else {
                 step("Inhale", 4000, 1.7, () => {
                     step("Hold", 7000, 1.7, () => {
-                        step("Exhale", 8000, 1.0, runCycle);
+                        step("Exhale", 8000, 1.0, completeCycle);
                     });
                 });
             }
@@ -163,6 +204,20 @@
         function step(text, duration, scale, callback) {
             if (!isRunning) return;
             instruction.innerText = text;
+            
+            clearInterval(countdownInterval);
+            let secondsLeft = duration / 1000;
+            timerText.innerText = `${secondsLeft}s`;
+            
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    timerText.innerText = `${secondsLeft}s`;
+                } else {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+
             circle.style.transition = `transform ${duration / 1000}s ease-in-out`;
             circle.style.transform = `scale(${scale})`;
             timer = setTimeout(callback, duration);
