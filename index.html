@@ -102,125 +102,104 @@
 
 
     <script>
-        let isRunning = false;
-        let mode = 'box';
-        let timer;
-        let countdownInterval;
-        let cycles = 0;
-        let soundEnabled = true;
-        let audioCtx = null;
+        let running = false, mode = 'box', target = 60, left = 60, cycles = 0;
+        let t1, t2, t3, chimeOn = true, rainOn = false, ctx = null, rainNode = null;
+        const el = id => document.getElementById(id);
+        const tips = [
+            "Drop your shoulders away from your ears and soften your jaw.",
+            "Unclench your hands and rest them gently on your lap.",
+            "Let your eyes drift away from the screen for a few seconds.",
+            "Take one last deep breath before returning to your inbox."
+        ];
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+        function audio() {
+            if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+            if (ctx.state === 'suspended') ctx.resume();
         }
-
-        function playChime(type) {
-            if (!soundEnabled) return;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            // Different calming pitches for Inhale, Hold, and Exhale
-            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396 };
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
-
-            // Soft fade-in and long gentle fade-out like a singing bowl
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 1.8);
+        function setMode(m) {
+            if (running) stop(false);
+            mode = m;
+            ['box','relax','energy'].forEach(k => el(k+'Btn').classList.toggle('active', mode === k));
         }
-
-        const circle = document.getElementById('circle');
-        const instruction = document.getElementById('instruction');
-        const timerText = document.getElementById('timerText');
-        const startBtn = document.getElementById('startBtn');
-        const cycleCounter = document.getElementById('cycleCounter');
-
-        function setMode(selected) {
-            if (isRunning) toggleSession();
-            mode = selected;
-            document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
-            document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
-            instruction.innerText = "Ready";
-            timerText.innerText = "";
+        function setDur(s, b) {
+            if (running) stop(false);
+            target = left = s;
+            document.querySelectorAll('.dur').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            showTime();
         }
-
-        function toggleSession() {
-            if (isRunning) {
-                isRunning = false;
-                clearTimeout(timer);
-                clearInterval(countdownInterval);
-                circle.style.transition = "transform 0.5s ease";
-                circle.style.transform = "scale(1)";
-                instruction.innerText = "Ready";
-                timerText.innerText = "";
-                startBtn.innerText = "Start Session";
+        function showTime() {
+            el('timeLeft').innerText = target === 0 ? "Break: Open" : `Break: ${Math.floor(left/60)}:${(left%60)<10?'0':''}${left%60}`;
+        }
+        function toggleSession() { running ? stop(false) : start(); }
+        function start() {
+            audio(); running = true; cycles = 0; left = target;
+            el('cycleCounter').innerText = "Cycles: 0";
+            el('startBtn').innerText = "End Pause";
+            document.body.classList.add('zen-on');
+            showTime();
+            if (target > 0) t3 = setInterval(() => { left--; showTime(); if (left <= 0) stop(true); }, 1000);
+            cycle();
+        }
+        function stop(done) {
+            running = false; clearTimeout(t1); clearInterval(t2); clearInterval(t3);
+            document.body.classList.remove('zen-on');
+            ['circle','h1','h2','glow'].forEach(id => { el(id).style.transition = "0.5s ease"; el(id).style.transform = "scale(1)"; });
+            el('glow').style.opacity = "0.5";
+            el('startBtn').innerText = "Start Session";
+            if (done) {
+                el('instruction').innerText = "Complete"; el('timerText').innerText = "Well done";
+                chime('Complete'); el('prompt').innerText = `"${tips[Math.floor(Math.random()*tips.length)]}"`;
             } else {
-                isRunning = true;
-                cycles = 0;
-                cycleCounter.innerText = "Cycles completed: 0";
-                startBtn.innerText = "Stop";
-                runCycle();
+                el('instruction').innerText = "Ready"; el('timerText').innerText = ""; left = target; showTime();
             }
         }
-
-        function completeCycle() {
-            if (!isRunning) return;
-            cycles++;
-            cycleCounter.innerText = `Cycles completed: ${cycles}`;
-            runCycle();
+        function next() { if (!running) return; cycles++; el('cycleCounter').innerText = `Cycles: ${cycles}`; cycle(); }
+        function cycle() {
+            if (!running) return;
+            if (mode === 'box') step("Inhale",4000,1.65,()=>step("Hold",4000,1.65,()=>step("Exhale",4000,1,()=>step("Hold",4000,1,next))));
+            else if (mode === 'relax') step("Inhale",4000,1.65,()=>step("Hold",7000,1.65,()=>step("Exhale",8000,1,next)));
+            else step("Inhale",6000,1.65,()=>step("Exhale",2000,1,next));
         }
-
-        function runCycle() {
-            if (!isRunning) return;
-            if (mode === 'box') {
-                step("Inhale", 4000, 1.7, () => {
-                    step("Hold", 4000, 1.7, () => {
-                        step("Exhale", 4000, 1.0, () => {
-                            step("Hold", 4000, 1.0, completeCycle);
-                        });
-                    });
-                });
-            } else {
-                step("Inhale", 4000, 1.7, () => {
-                    step("Hold", 7000, 1.7, () => {
-                        step("Exhale", 8000, 1.0, completeCycle);
-                    });
-                });
-            }
+        function step(txt, ms, sc, cb) {
+            if (!running) return;
+            el('instruction').innerText = txt; chime(txt); clearInterval(t2);
+            let s = ms / 1000; el('timerText').innerText = `${s}s`;
+            t2 = setInterval(() => { s--; s > 0 ? el('timerText').innerText = `${s}s` : clearInterval(t2); }, 1000);
+            el('circle').style.transition = `transform ${ms/1000}s ease-in-out`; el('circle').style.transform = `scale(${sc})`;
+            el('h1').style.transition = `transform ${ms/1000}s ease-in-out 0.15s`; el('h1').style.transform = `scale(${sc*1.12})`;
+            el('h2').style.transition = `transform ${ms/1000}s ease-in-out 0.3s`; el('h2').style.transform = `scale(${sc*1.24})`;
+            el('glow').style.transform = `scale(${sc>1?1.35:0.9})`; el('glow').style.opacity = sc>1 ? "0.95" : "0.45";
+            t1 = setTimeout(cb, ms);
         }
-
-        function step(text, duration, scale, callback) {
-            if (!isRunning) return;
-            instruction.innerText = text;
-            playChime(text);
-            
-            clearInterval(countdownInterval);
-            let secondsLeft = duration / 1000;
-            timerText.innerText = `${secondsLeft}s`;
-            
-            countdownInterval = setInterval(() => {
-                secondsLeft--;
-                if (secondsLeft > 0) {
-                    timerText.innerText = `${secondsLeft}s`;
-                } else {
-                    clearInterval(countdownInterval);
-                }
-            }, 1000);
-
-            circle.style.transition = `transform ${duration / 1000}s ease-in-out`;
-            circle.style.transform = `scale(${scale})`;
-            timer = setTimeout(callback, duration);
+        function toggleChime() {
+            chimeOn = !chimeOn; const b = el('chimeBtn');
+            b.innerText = chimeOn ? "🔔 Chimes: On" : "🔕 Chimes: Off"; b.classList.toggle('on', chimeOn);
         }
+        function chime(type) {
+            if (!chimeOn) return; audio();
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.frequency.value = { Inhale: 528, Hold: 432, Exhale: 396, Complete: 660 }[type] || 432;
+            g.gain.setValueAtTime(0.001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.11, ctx.currentTime + 0.08);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.8);
+            o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 1.8);
+        }
+        function toggleRain() {
+            audio(); rainOn = !rainOn; const b = el('rainBtn');
+            b.innerText = rainOn ? "🌊 Office Rain: On" : "🌊 Office Rain: Off"; b.classList.toggle('on', rainOn);
+            if (rainOn) {
+                const buf = ctx.createBuffer(1, 2*ctx.sampleRate, ctx.sampleRate), d = buf.getChannelData(0);
+                for (let i=0, last=0; i<d.length; i++) { last = (last + 0.02*(Math.random()*2-1))/1.02; d[i] = last*2.5; }
+                rainNode = ctx.createBufferSource(); rainNode.buffer = buf; rainNode.loop = true;
+                const g = ctx.createGain(); g.gain.value = 0.06;
+                rainNode.connect(g); g.connect(ctx.destination); rainNode.start();
+            } else if (rainNode) { rainNode.stop(); rainNode.disconnect(); rainNode = null; }
+        }
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space') { e.preventDefault(); toggleSession(); }
+            if (e.key.toLowerCase() === 'm') toggleChime();
+        });
     </script>
 </body>
 </html>
