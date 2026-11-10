@@ -3,78 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CalmSutra | Corporate Mindfulness</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <title>CalmSutra | Corporate Breathing</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #28282B; color: #F4F4F6;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh; text-align: center; padding: 20px; overflow: hidden; position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #28282B;
+            color: #F4F4F6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
         }
-        .glow {
-            position: absolute; width: 500px; height: 500px; border-radius: 50%; pointer-events: none;
-            background: radial-gradient(circle, rgba(240,128,0,0.18) 0%, rgba(40,40,43,0) 70%);
-            transition: transform 4s ease-in-out, opacity 4s ease-in-out; opacity: 0.5;
+        h1 { 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #FFFFFF; 
         }
-        .zen { transition: opacity 0.8s ease; z-index: 2; }
-        body.zen-on .zen { opacity: 0.1; pointer-events: none; }
-        body.zen-on:hover .zen { opacity: 0.9; pointer-events: auto; }
-        h1 { font-family: 'Lora', serif; font-size: 2.3rem; color: #FFF; margin-bottom: 6px; }
-        p { color: #A1A1AA; font-size: 0.92rem; max-width: 400px; margin-bottom: 22px; }
-        .glass {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px); padding: 6px; border-radius: 12px; margin-bottom: 12px;
+        p { 
+            color: #A1A1AA; 
+            margin-bottom: 35px; 
+            max-width: 400px; 
+            line-height: 1.5;
+        }
+        .controls { 
+            margin-bottom: 45px; 
+            display: flex; 
+            gap: 12px; 
         }
         button {
-            font-family: inherit; padding: 8px 13px; font-size: 0.8rem; border: none;
-            border-radius: 8px; cursor: pointer; background: transparent; color: #A1A1AA; transition: 0.2s;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #3F3F46;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #36363A;
+            color: #E4E4E7;
+            transition: all 0.2s;
         }
-        button:hover { color: #FFF; background: rgba(255,255,255,0.06); }
-        button.active { background: #F08000; color: #FFF; font-weight: 600; box-shadow: 0 4px 12px rgba(240,128,0,0.3); }
-        .circle-container { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; margin: 20px 0; z-index: 2; }
-        .halo, .circle {
-            position: absolute; width: 130px; height: 130px;
-            border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%; animation: morph 8s ease-in-out infinite;
+        button:hover {
+            background-color: #424247;
         }
-        .halo-1 { background: rgba(240,128,0,0.14); transition: transform 4s ease-in-out 0.15s; }
-        .halo-2 { background: rgba(240,128,0,0.07); transition: transform 4s ease-in-out 0.3s; }
-        .circle { background: radial-gradient(circle at 30% 30%, #FF9E2C, #F08000); box-shadow: 0 0 35px rgba(240,128,0,0.45); transition: transform 4s ease-in-out; }
-        @keyframes morph { 0%, 100% { border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%; } 50% { border-radius: 42% 58% 55% 45% / 45% 60% 40% 55%; } }
-        .instruction { position: absolute; display: flex; flex-direction: column; align-items: center; font-size: 1.2rem; font-weight: 700; color: #FFF; pointer-events: none; z-index: 3; }
-        .timer-text { font-size: 0.9rem; font-weight: 400; margin-top: 3px; opacity: 0.9; }
-        button#startBtn { background: #F08000; color: #FFF; padding: 12px 34px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; z-index: 3; }
-        .pills { display: flex; gap: 8px; margin-top: 12px; }
-        .pill { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 5px 12px; font-size: 0.75rem; }
-        .pill.on { border-color: #F08000; color: #FFF; }
-        .stats { margin-top: 14px; font-size: 0.82rem; color: #A1A1AA; display: flex; gap: 14px; justify-content: center; }
-        .prompt { margin-top: 16px; font-family: 'Lora', serif; font-style: italic; font-size: 0.9rem; color: #D4D4D8; max-width: 420px; }
-        .hint { position: fixed; bottom: 12px; font-size: 0.7rem; color: #71717A; }
+        button.active { 
+            background-color: #F08000; 
+            color: #FFFFFF; 
+            border-color: #F08000;
+            font-weight: 600;
+        }
+        button#startBtn { 
+            background-color: #F08000; 
+            color: #FFFFFF; 
+            border: none;
+            margin-top: 35px; 
+            padding: 12px 32px; 
+            font-size: 16px; 
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(240, 128, 0, 0.3);
+        }
+        button#startBtn:hover {
+            background-color: #D97200;
+        }
+        .circle-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .circle {
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle at 30% 30%, #FF9E2C, #F08000);
+            border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%;
+            animation: lungMorph 8s ease-in-out infinite;
+            transition: transform 4s ease-in-out;
+            box-shadow: 0 0 35px rgba(240, 128, 0, 0.45);
+        }
+        @keyframes lungMorph {
+            0%, 100% { border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%; }
+            50% { border-radius: 42% 58% 55% 45% / 45% 60% 40% 55%; }
+        }
+        .instruction {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF;
+            pointer-events: none;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        }
+        .timer-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+        .cycle-counter {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #A1A1AA;
+        }
+                .sound-btn {
+            margin-top: 15px;
+            padding: 6px 14px;
+            font-size: 13px;
+            background-color: transparent;
+            border: 1px solid #3F3F46;
+            color: #A1A1AA;
+        }
+        .sound-btn:hover {
+            color: #FFFFFF;
+            border-color: #71717A;
+            background-color: #36363A;
+        }
     </style>
 </head>
 <body>
-    <div class="glow" id="glow"></div>
-    <div class="zen">
-        <h1>CalmSutra</h1>
-        <p>A quiet pause between meetings. Pick your focus and break length.</p>
-        <div class="glass">
-            <button id="boxBtn" class="active" onclick="setMode('box')">Pre-Meeting (4-4-4-4)</button>
-            <button id="relaxBtn" onclick="setMode('relax')">Decompress (4-7-8)</button>
-            <button id="energyBtn" onclick="setMode('energy')">Energy (6-0-2-0)</button>
-        </div>
-        <div class="glass">
-            <button class="dur active" onclick="setDur(60, this)">1 Min</button>
-            <button class="dur" onclick="setDur(180, this)">3 Min</button>
-            <button class="dur" onclick="setDur(300, this)">5 Min</button>
-            <button class="dur" onclick="setDur(0, this)">Open</button>
-        </div>
+
+    <h1>CalmSutra</h1>
+    <p>Step away from your inbox. Choose a technique below to lower stress and sharpen your focus.</p>
+
+    <div class="controls">
+        <button id="boxBtn" class="active" onclick="setMode('box')">Box Breathing (Focus)</button>
+        <button id="relaxBtn" onclick="setMode('relax')">4-7-8 (Stress Relief)</button>
     </div>
 
     <div class="circle-container">
-        <div class="halo halo-2" id="h2"></div>
-        <div class="halo halo-1" id="h1"></div>
         <div class="circle" id="circle"></div>
         <div class="instruction">
             <span id="instruction">Ready</span>
@@ -83,123 +144,130 @@
     </div>
 
     <button id="startBtn" onclick="toggleSession()">Start Session</button>
-    <div class="pills zen">
-        <button class="pill on" id="chimeBtn" onclick="toggleChime()">🔔 Chimes: On</button>
-        <button class="pill" id="rainBtn" onclick="toggleRain()">🌊 Office Rain: Off</button>
-    </div>
-    <div class="zen">
-        <div class="stats">
-            <span id="cycleCounter">Cycles: 0</span>
-            <span id="timeLeft">Break: 1:00</span>
-        </div>
-        <div class="prompt" id="prompt">"Drop your shoulders away from your ears and soften your jaw."</div>
-    </div>
-    <div class="hint zen">Spacebar: Start/Stop • M: Mute Chimes</div>
-
-    <button id="startBtn" onclick="toggleSession()">Start Session</button>
     <div class="cycle-counter" id="cycleCounter">Cycles completed: 0</div>
     <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Sound: On</button>
 
 
     <script>
-        let running = false, mode = 'box', target = 60, left = 60, cycles = 0;
-        let t1, t2, t3, chimeOn = true, rainOn = false, ctx = null, rainNode = null;
-        const el = id => document.getElementById(id);
-        const tips = [
-            "Drop your shoulders away from your ears and soften your jaw.",
-            "Unclench your hands and rest them gently on your lap.",
-            "Let your eyes drift away from the screen for a few seconds.",
-            "Take one last deep breath before returning to your inbox."
-        ];
+        let isRunning = false;
+        let mode = 'box';
+        let timer;
+        let countdownInterval;
+        let cycles = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
 
-        function audio() {
-            if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-            if (ctx.state === 'suspended') ctx.resume();
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
         }
-        function setMode(m) {
-            if (running) stop(false);
-            mode = m;
-            ['box','relax','energy'].forEach(k => el(k+'Btn').classList.toggle('active', mode === k));
+
+        function playChime(type) {
+            if (!soundEnabled) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Different calming pitches for Inhale, Hold, and Exhale
+            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396 };
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
+
+            // Soft fade-in and long gentle fade-out like a singing bowl
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.8);
         }
-        function setDur(s, b) {
-            if (running) stop(false);
-            target = left = s;
-            document.querySelectorAll('.dur').forEach(x => x.classList.remove('active'));
-            b.classList.add('active');
-            showTime();
+
+        const circle = document.getElementById('circle');
+        const instruction = document.getElementById('instruction');
+        const timerText = document.getElementById('timerText');
+        const startBtn = document.getElementById('startBtn');
+        const cycleCounter = document.getElementById('cycleCounter');
+
+        function setMode(selected) {
+            if (isRunning) toggleSession();
+            mode = selected;
+            document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
+            document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
+            instruction.innerText = "Ready";
+            timerText.innerText = "";
         }
-        function showTime() {
-            el('timeLeft').innerText = target === 0 ? "Break: Open" : `Break: ${Math.floor(left/60)}:${(left%60)<10?'0':''}${left%60}`;
-        }
-        function toggleSession() { running ? stop(false) : start(); }
-        function start() {
-            audio(); running = true; cycles = 0; left = target;
-            el('cycleCounter').innerText = "Cycles: 0";
-            el('startBtn').innerText = "End Pause";
-            document.body.classList.add('zen-on');
-            showTime();
-            if (target > 0) t3 = setInterval(() => { left--; showTime(); if (left <= 0) stop(true); }, 1000);
-            cycle();
-        }
-        function stop(done) {
-            running = false; clearTimeout(t1); clearInterval(t2); clearInterval(t3);
-            document.body.classList.remove('zen-on');
-            ['circle','h1','h2','glow'].forEach(id => { el(id).style.transition = "0.5s ease"; el(id).style.transform = "scale(1)"; });
-            el('glow').style.opacity = "0.5";
-            el('startBtn').innerText = "Start Session";
-            if (done) {
-                el('instruction').innerText = "Complete"; el('timerText').innerText = "Well done";
-                chime('Complete'); el('prompt').innerText = `"${tips[Math.floor(Math.random()*tips.length)]}"`;
+
+        function toggleSession() {
+            if (isRunning) {
+                isRunning = false;
+                clearTimeout(timer);
+                clearInterval(countdownInterval);
+                circle.style.transition = "transform 0.5s ease";
+                circle.style.transform = "scale(1)";
+                instruction.innerText = "Ready";
+                timerText.innerText = "";
+                startBtn.innerText = "Start Session";
             } else {
-                el('instruction').innerText = "Ready"; el('timerText').innerText = ""; left = target; showTime();
+                isRunning = true;
+                cycles = 0;
+                cycleCounter.innerText = "Cycles completed: 0";
+                startBtn.innerText = "Stop";
+                runCycle();
             }
         }
-        function next() { if (!running) return; cycles++; el('cycleCounter').innerText = `Cycles: ${cycles}`; cycle(); }
-        function cycle() {
-            if (!running) return;
-            if (mode === 'box') step("Inhale",4000,1.65,()=>step("Hold",4000,1.65,()=>step("Exhale",4000,1,()=>step("Hold",4000,1,next))));
-            else if (mode === 'relax') step("Inhale",4000,1.65,()=>step("Hold",7000,1.65,()=>step("Exhale",8000,1,next)));
-            else step("Inhale",6000,1.65,()=>step("Exhale",2000,1,next));
+
+        function completeCycle() {
+            if (!isRunning) return;
+            cycles++;
+            cycleCounter.innerText = `Cycles completed: ${cycles}`;
+            runCycle();
         }
-        function step(txt, ms, sc, cb) {
-            if (!running) return;
-            el('instruction').innerText = txt; chime(txt); clearInterval(t2);
-            let s = ms / 1000; el('timerText').innerText = `${s}s`;
-            t2 = setInterval(() => { s--; s > 0 ? el('timerText').innerText = `${s}s` : clearInterval(t2); }, 1000);
-            el('circle').style.transition = `transform ${ms/1000}s ease-in-out`; el('circle').style.transform = `scale(${sc})`;
-            el('h1').style.transition = `transform ${ms/1000}s ease-in-out 0.15s`; el('h1').style.transform = `scale(${sc*1.12})`;
-            el('h2').style.transition = `transform ${ms/1000}s ease-in-out 0.3s`; el('h2').style.transform = `scale(${sc*1.24})`;
-            el('glow').style.transform = `scale(${sc>1?1.35:0.9})`; el('glow').style.opacity = sc>1 ? "0.95" : "0.45";
-            t1 = setTimeout(cb, ms);
+
+        function runCycle() {
+            if (!isRunning) return;
+            if (mode === 'box') {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 4000, 1.7, () => {
+                        step("Exhale", 4000, 1.0, () => {
+                            step("Hold", 4000, 1.0, completeCycle);
+                        });
+                    });
+                });
+            } else {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 7000, 1.7, () => {
+                        step("Exhale", 8000, 1.0, completeCycle);
+                    });
+                });
+            }
         }
-        function toggleChime() {
-            chimeOn = !chimeOn; const b = el('chimeBtn');
-            b.innerText = chimeOn ? "🔔 Chimes: On" : "🔕 Chimes: Off"; b.classList.toggle('on', chimeOn);
+
+        function step(text, duration, scale, callback) {
+            if (!isRunning) return;
+            instruction.innerText = text;
+            playChime(text);
+            
+            clearInterval(countdownInterval);
+            let secondsLeft = duration / 1000;
+            timerText.innerText = `${secondsLeft}s`;
+            
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    timerText.innerText = `${secondsLeft}s`;
+                } else {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+
+            circle.style.transition = `transform ${duration / 1000}s ease-in-out`;
+            circle.style.transform = `scale(${scale})`;
+            timer = setTimeout(callback, duration);
         }
-        function chime(type) {
-            if (!chimeOn) return; audio();
-            const o = ctx.createOscillator(), g = ctx.createGain();
-            o.frequency.value = { Inhale: 528, Hold: 432, Exhale: 396, Complete: 660 }[type] || 432;
-            g.gain.setValueAtTime(0.001, ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.11, ctx.currentTime + 0.08);
-            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.8);
-            o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 1.8);
-        }
-        function toggleRain() {
-            audio(); rainOn = !rainOn; const b = el('rainBtn');
-            b.innerText = rainOn ? "🌊 Office Rain: On" : "🌊 Office Rain: Off"; b.classList.toggle('on', rainOn);
-            if (rainOn) {
-                const buf = ctx.createBuffer(1, 2*ctx.sampleRate, ctx.sampleRate), d = buf.getChannelData(0);
-                for (let i=0, last=0; i<d.length; i++) { last = (last + 0.02*(Math.random()*2-1))/1.02; d[i] = last*2.5; }
-                rainNode = ctx.createBufferSource(); rainNode.buffer = buf; rainNode.loop = true;
-                const g = ctx.createGain(); g.gain.value = 0.06;
-                rainNode.connect(g); g.connect(ctx.destination); rainNode.start();
-            } else if (rainNode) { rainNode.stop(); rainNode.disconnect(); rainNode = null; }
-        }
-        document.addEventListener('keydown', e => {
-            if (e.code === 'Space') { e.preventDefault(); toggleSession(); }
-            if (e.key.toLowerCase() === 'm') toggleChime();
-        });
     </script>
 </body>
 </html>
