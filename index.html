@@ -55,22 +55,46 @@
     </style>
 </head>
 <body>
-
-    <h1>CalmSutra</h1>
-    <p>Step away from your inbox. Choose a technique below to lower stress and sharpen your focus.</p>
-
-    <div class="controls">
-        <button id="boxBtn" class="active" onclick="setMode('box')">Box Breathing (Focus)</button>
-        <button id="relaxBtn" onclick="setMode('relax')">4-7-8 (Stress Relief)</button>
+    <div class="glow" id="glow"></div>
+    <div class="zen">
+        <h1>CalmSutra</h1>
+        <p>A quiet pause between meetings. Pick your focus and break length.</p>
+        <div class="glass">
+            <button id="boxBtn" class="active" onclick="setMode('box')">Pre-Meeting (4-4-4-4)</button>
+            <button id="relaxBtn" onclick="setMode('relax')">Decompress (4-7-8)</button>
+            <button id="energyBtn" onclick="setMode('energy')">Energy (6-0-2-0)</button>
+        </div>
+        <div class="glass">
+            <button class="dur active" onclick="setDur(60, this)">1 Min</button>
+            <button class="dur" onclick="setDur(180, this)">3 Min</button>
+            <button class="dur" onclick="setDur(300, this)">5 Min</button>
+            <button class="dur" onclick="setDur(0, this)">Open</button>
+        </div>
     </div>
 
     <div class="circle-container">
+        <div class="halo halo-2" id="h2"></div>
+        <div class="halo halo-1" id="h1"></div>
         <div class="circle" id="circle"></div>
         <div class="instruction">
             <span id="instruction">Ready</span>
             <span class="timer-text" id="timerText"></span>
         </div>
     </div>
+
+    <button id="startBtn" onclick="toggleSession()">Start Session</button>
+    <div class="pills zen">
+        <button class="pill on" id="chimeBtn" onclick="toggleChime()">🔔 Chimes: On</button>
+        <button class="pill" id="rainBtn" onclick="toggleRain()">🌊 Office Rain: Off</button>
+    </div>
+    <div class="zen">
+        <div class="stats">
+            <span id="cycleCounter">Cycles: 0</span>
+            <span id="timeLeft">Break: 1:00</span>
+        </div>
+        <div class="prompt" id="prompt">"Drop your shoulders away from your ears and soften your jaw."</div>
+    </div>
+    <div class="hint zen">Spacebar: Start/Stop • M: Mute Chimes</div>
 
     <button id="startBtn" onclick="toggleSession()">Start Session</button>
     <div class="cycle-counter" id="cycleCounter">Cycles completed: 0</div>
