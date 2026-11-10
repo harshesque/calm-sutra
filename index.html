@@ -3,455 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CalmSutra | Corporate Mindfulness</title>
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>CalmSutra | Corporate Breathing</title>
     <style>
-        :root {
-            --bg-dark: #28282B;
-            --accent: #F08000;
-            --accent-light: #FF9E2C;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #F4F4F6;
-            --text-muted: #A1A1AA;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #28282B;
+            color: #F4F4F6;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            margin: 0;
             text-align: center;
-            padding: 24px;
-            overflow: hidden;
-            position: relative;
+            padding: 20px;
         }
-
-        /* Ambient Breathing Background Glow */
-        .ambient-glow {
-            position: absolute;
-            width: 520px;
-            height: 520px;
-            background: radial-gradient(circle, rgba(240, 128, 0, 0.16) 0%, rgba(40, 40, 43, 0) 70%);
-            border-radius: 50%;
-            z-index: 0;
-            pointer-events: none;
-            transform: scale(0.9);
-            opacity: 0.5;
-            transition: transform 4s ease-in-out, opacity 4s ease-in-out;
+        h1 { 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #FFFFFF; 
         }
-
-        /* Zen Focus Mode Fading */
-        .zen-fade {
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            z-index: 2;
-        }
-
-        body.zen-active .zen-fade {
-            opacity: 0.12;
-            pointer-events: none;
-        }
-
-        body.zen-active:hover .zen-fade {
-            opacity: 0.85;
-            pointer-events: auto;
-        }
-
-        h1 {
-            font-family: 'Lora', serif;
-            font-size: 2.4rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: #FFFFFF;
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            max-width: 420px;
+        p { 
+            color: #A1A1AA; 
+            margin-bottom: 35px; 
+            max-width: 400px; 
             line-height: 1.5;
-            margin-bottom: 28px;
         }
-
-        /* Glassmorphism Control Groups */
-        .control-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 6px;
-            border-radius: 14px;
-            margin-bottom: 14px;
+        .controls { 
+            margin-bottom: 45px; 
+            display: flex; 
+            gap: 12px; 
         }
-
         button {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            padding: 8px 14px;
-            font-size: 0.82rem;
+            padding: 10px 18px;
+            font-size: 14px;
             font-weight: 500;
-            border: 1px solid transparent;
-            border-radius: 10px;
+            border: 1px solid #3F3F46;
+            border-radius: 8px;
             cursor: pointer;
-            background: transparent;
-            color: var(--text-muted);
-            transition: all 0.25s ease;
+            background-color: #36363A;
+            color: #E4E4E7;
+            transition: all 0.2s;
         }
-
         button:hover {
-            color: #FFFFFF;
-            background: rgba(255, 255, 255, 0.06);
+            background-color: #424247;
         }
-
-        button.active {
-            background-color: var(--accent);
-            color: #FFFFFF;
+        button.active { 
+            background-color: #F08000; 
+            color: #FFFFFF; 
+            border-color: #F08000;
             font-weight: 600;
-            box-shadow: 0 4px 14px rgba(240, 128, 0, 0.35);
         }
-
-        /* Layered Halo & Organic Lung Bubble */
+        button#startBtn { 
+            background-color: #F08000; 
+            color: #FFFFFF; 
+            border: none;
+            margin-top: 35px; 
+            padding: 12px 32px; 
+            font-size: 16px; 
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(240, 128, 0, 0.3);
+        }
+        button#startBtn:hover {
+            background-color: #D97200;
+        }
         .circle-container {
             position: relative;
-            width: 260px;
-            height: 260px;
+            width: 220px;
+            height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 25px 0;
-            z-index: 2;
         }
-
-        .halo {
-            position: absolute;
-            width: 135px;
-            height: 135px;
-            border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%;
-            background: rgba(240, 128, 0, 0.14);
-            animation: lungMorph 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        .halo-1 {
-            transition: transform 4s ease-in-out 0.15s;
-        }
-
-        .halo-2 {
-            background: rgba(240, 128, 0, 0.07);
-            transition: transform 4s ease-in-out 0.3s;
-        }
-
         .circle {
-            width: 135px;
-            height: 135px;
-            background: radial-gradient(circle at 30% 30%, var(--accent-light), var(--accent));
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle at 30% 30%, #FF9E2C, #F08000);
             border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%;
             animation: lungMorph 8s ease-in-out infinite;
             transition: transform 4s ease-in-out;
-            box-shadow: 0 0 40px rgba(240, 128, 0, 0.45);
-            z-index: 2;
+            box-shadow: 0 0 35px rgba(240, 128, 0, 0.45);
         }
-
         @keyframes lungMorph {
             0%, 100% { border-radius: 54% 46% 42% 58% / 60% 45% 55% 40%; }
             50% { border-radius: 42% 58% 55% 45% / 45% 60% 40% 55%; }
         }
-
         .instruction {
             position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 3;
-            pointer-events: none;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-        }
-
-        #instructionText {
-            font-size: 1.25rem;
+            font-size: 20px;
             font-weight: 700;
             color: #FFFFFF;
-            letter-spacing: 0.02em;
+            pointer-events: none;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
         }
-
         .timer-text {
-            font-size: 0.95rem;
+            font-size: 16px;
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: 3px;
+            margin-top: 4px;
+            opacity: 0.9;
         }
-
-        /* Primary Action & Audio Bar */
-        .action-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 3;
-            gap: 14px;
+        .cycle-counter {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #A1A1AA;
         }
-
-        button#startBtn {
-            background-color: var(--accent);
-            color: #FFFFFF;
-            padding: 13px 38px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(240, 128, 0, 0.35);
-        }
-
-        button#startBtn:hover {
-            background-color: #D97200;
-            transform: translateY(-1px);
-        }
-
-        .audio-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .pill-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(8px);
+                .sound-btn {
+            margin-top: 15px;
             padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            color: var(--text-muted);
+            font-size: 13px;
+            background-color: transparent;
+            border: 1px solid #3F3F46;
+            color: #A1A1AA;
         }
-
-        .pill-btn.audio-on {
-            border-color: rgba(240, 128, 0, 0.5);
+        .sound-btn:hover {
             color: #FFFFFF;
-        }
-
-        /* Stats & Micro-Prompts */
-        .status-bar {
-            margin-top: 16px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .micro-prompt {
-            margin-top: 22px;
-            font-family: 'Lora', serif;
-            font-style: italic;
-            font-size: 0.95rem;
-            color: #D4D4D8;
-            min-height: 24px;
-            max-width: 440px;
-            opacity: 0.85;
-        }
-
-        .shortcuts-hint {
-            position: fixed;
-            bottom: 14px;
-            font-size: 0.72rem;
-            color: #71717A;
-            letter-spacing: 0.03em;
+            border-color: #71717A;
+            background-color: #36363A;
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-glow" id="ambientGlow"></div>
+    <h1>CalmSutra</h1>
+    <p>Step away from your inbox. Choose a technique below to lower stress and sharpen your focus.</p>
 
-    <div class="zen-fade">
-        <h1>CalmSutra</h1>
-        <p class="subtitle">A quiet pause between meetings. Choose your intention and break length below.</p>
-
-        <!-- Context-Aware Breathing Modes -->
-        <div class="control-group">
-            <button id="boxBtn" class="active" onclick="setMode('box')">Pre-Meeting Focus (4-4-4-4)</button>
-            <button id="relaxBtn" onclick="setMode('relax')">Post-Call Decompress (4-7-8)</button>
-            <button id="energyBtn" onclick="setMode('energy')">Afternoon Energy (6-0-2-0)</button>
-        </div>
-
-        <!-- Time-Based Quick Breaks -->
-        <div class="control-group">
-            <button class="dur-btn active" onclick="setDuration(60, this)">1 Min</button>
-            <button class="dur-btn" onclick="setDuration(180, this)">3 Min</button>
-            <button class="dur-btn" onclick="setDuration(300, this)">5 Min</button>
-            <button class="dur-btn" onclick="setDuration(0, this)">Open-Ended</button>
-        </div>
+    <div class="controls">
+        <button id="boxBtn" class="active" onclick="setMode('box')">Box Breathing (Focus)</button>
+        <button id="relaxBtn" onclick="setMode('relax')">4-7-8 (Stress Relief)</button>
     </div>
 
-    <!-- Layered Halo & Lung Bubble -->
     <div class="circle-container">
-        <div class="halo halo-2" id="halo2"></div>
-        <div class="halo halo-1" id="halo1"></div>
         <div class="circle" id="circle"></div>
         <div class="instruction">
-            <span id="instructionText">Ready</span>
+            <span id="instruction">Ready</span>
             <span class="timer-text" id="timerText"></span>
         </div>
     </div>
 
-    <!-- Controls & Audio -->
-    <div class="action-area">
-        <button id="startBtn" onclick="toggleSession()">Start Session</button>
-        
-        <div class="audio-controls zen-fade">
-            <button class="pill-btn audio-on" id="chimeBtn" onclick="toggleChime()">🔔 Chimes: On</button>
-            <button class="pill-btn" id="noiseBtn" onclick="toggleNoise()">🌊 Office Rain: Off</button>
-        </div>
-    </div>
+    <button id="startBtn" onclick="toggleSession()">Start Session</button>
+    <div class="cycle-counter" id="cycleCounter">Cycles completed: 0</div>
+    <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Sound: On</button>
 
-    <!-- Stats & Desk Micro-Prompts -->
-    <div class="zen-fade">
-        <div class="status-bar">
-            <span id="cycleCounter">Cycles completed: 0</span>
-            <span id="sessionRemaining">Break timer: 1:00</span>
-        </div>
-        <div class="micro-prompt" id="microPrompt">"Drop your shoulders away from your ears and soften your jaw."</div>
-    </div>
-
-    <div class="shortcuts-hint zen-fade">Shortcuts: Spacebar to Start/Stop • M to Mute Chimes</div>
 
     <script>
         let isRunning = false;
         let mode = 'box';
-        let targetSeconds = 60;
-        let remainingSeconds = 60;
+        let timer;
+        let countdownInterval;
         let cycles = 0;
-
-        let stepTimer, phaseInterval, sessionInterval;
-        let chimeEnabled = true;
-        let noiseEnabled = false;
+        let soundEnabled = true;
         let audioCtx = null;
-        let noiseNode = null;
-        let noiseGain = null;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+        }
+
+        function playChime(type) {
+            if (!soundEnabled) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Different calming pitches for Inhale, Hold, and Exhale
+            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396 };
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
+
+            // Soft fade-in and long gentle fade-out like a singing bowl
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.8);
+        }
 
         const circle = document.getElementById('circle');
-        const halo1 = document.getElementById('halo1');
-        const halo2 = document.getElementById('halo2');
-        const ambientGlow = document.getElementById('ambientGlow');
-        const instructionText = document.getElementById('instructionText');
+        const instruction = document.getElementById('instruction');
         const timerText = document.getElementById('timerText');
         const startBtn = document.getElementById('startBtn');
         const cycleCounter = document.getElementById('cycleCounter');
-        const sessionRemaining = document.getElementById('sessionRemaining');
-        const microPrompt = document.getElementById('microPrompt');
-
-        const prompts = [
-            "Drop your shoulders away from your ears and soften your jaw.",
-            "Unclench your hands and rest them gently on your lap.",
-            "Let your eyes drift away from the screen for a few seconds.",
-            "Notice how your body feels supported by your chair.",
-            "Take one last deep breath before returning to your inbox."
-        ];
-
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
 
         function setMode(selected) {
-            if (isRunning) stopSession(false);
+            if (isRunning) toggleSession();
             mode = selected;
             document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
             document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
-            document.getElementById('energyBtn').classList.toggle('active', mode === 'energy');
-        }
-
-        function setDuration(secs, btn) {
-            if (isRunning) stopSession(false);
-            targetSeconds = secs;
-            remainingSeconds = secs;
-            document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateSessionDisplay();
-        }
-
-        function updateSessionDisplay() {
-            if (targetSeconds === 0) {
-                sessionRemaining.innerText = "Break timer: Open";
-            } else {
-                const m = Math.floor(remainingSeconds / 60);
-                const s = remainingSeconds % 60;
-                sessionRemaining.innerText = `Break timer: ${m}:${s < 10 ? '0' : ''}${s}`;
-            }
+            instruction.innerText = "Ready";
+            timerText.innerText = "";
         }
 
         function toggleSession() {
             if (isRunning) {
-                stopSession(false);
-            } else {
-                startSession();
-            }
-        }
-
-        function startSession() {
-            initAudio();
-            isRunning = true;
-            cycles = 0;
-            remainingSeconds = targetSeconds;
-            cycleCounter.innerText = "Cycles completed: 0";
-            startBtn.innerText = "End Pause";
-            document.body.classList.add('zen-active');
-            updateSessionDisplay();
-
-            if (targetSeconds > 0) {
-                sessionInterval = setInterval(() => {
-                    remainingSeconds--;
-                    updateSessionDisplay();
-                    if (remainingSeconds <= 0) {
-                        stopSession(true);
-                    }
-                }, 1000);
-            }
-
-            runCycle();
-        }
-
-        function stopSession(completedNaturally) {
-            isRunning = false;
-            clearTimeout(stepTimer);
-            clearInterval(phaseInterval);
-            clearInterval(sessionInterval);
-            document.body.classList.remove('zen-active');
-
-            resetVisuals();
-            startBtn.innerText = "Start Session";
-
-            if (completedNaturally) {
-                instructionText.innerText = "Complete";
-                timerText.innerText = "Well done";
-                playChime('Complete');
-                microPrompt.innerText = `"${prompts[Math.floor(Math.random() * prompts.length)]}"`;
-            } else {
-                instructionText.innerText = "Ready";
+                isRunning = false;
+                clearTimeout(timer);
+                clearInterval(countdownInterval);
+                circle.style.transition = "transform 0.5s ease";
+                circle.style.transform = "scale(1)";
+                instruction.innerText = "Ready";
                 timerText.innerText = "";
-                remainingSeconds = targetSeconds;
-                updateSessionDisplay();
+                startBtn.innerText = "Start Session";
+            } else {
+                isRunning = true;
+                cycles = 0;
+                cycleCounter.innerText = "Cycles completed: 0";
+                startBtn.innerText = "Stop";
+                runCycle();
             }
-        }
-
-        function resetVisuals() {
-            [circle, halo1, halo2, ambientGlow].forEach(el => {
-                el.style.transition = "transform 0.6s ease, opacity 0.6s ease";
-                el.style.transform = "scale(1)";
-            });
-            ambientGlow.style.opacity = "0.5";
         }
 
         function completeCycle() {
@@ -464,113 +230,44 @@
         function runCycle() {
             if (!isRunning) return;
             if (mode === 'box') {
-                step("Inhale", 4000, 1.65, () => {
-                    step("Hold", 4000, 1.65, () => {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 4000, 1.7, () => {
                         step("Exhale", 4000, 1.0, () => {
                             step("Hold", 4000, 1.0, completeCycle);
                         });
                     });
                 });
-            } else if (mode === 'relax') {
-                step("Inhale", 4000, 1.65, () => {
-                    step("Hold", 7000, 1.65, () => {
+            } else {
+                step("Inhale", 4000, 1.7, () => {
+                    step("Hold", 7000, 1.7, () => {
                         step("Exhale", 8000, 1.0, completeCycle);
                     });
-                });
-            } else if (mode === 'energy') {
-                step("Inhale", 6000, 1.65, () => {
-                    step("Exhale", 2000, 1.0, completeCycle);
                 });
             }
         }
 
         function step(text, duration, scale, callback) {
             if (!isRunning) return;
-            instructionText.innerText = text;
+            instruction.innerText = text;
             playChime(text);
-
-            clearInterval(phaseInterval);
+            
+            clearInterval(countdownInterval);
             let secondsLeft = duration / 1000;
             timerText.innerText = `${secondsLeft}s`;
-
-            phaseInterval = setInterval(() => {
+            
+            countdownInterval = setInterval(() => {
                 secondsLeft--;
                 if (secondsLeft > 0) {
                     timerText.innerText = `${secondsLeft}s`;
                 } else {
-                    clearInterval(phaseInterval);
+                    clearInterval(countdownInterval);
                 }
             }, 1000);
 
-            const sec = duration / 1000;
-            circle.style.transition = `transform ${sec}s ease-in-out`;
+            circle.style.transition = `transform ${duration / 1000}s ease-in-out`;
             circle.style.transform = `scale(${scale})`;
-
-            halo1.style.transition = `transform ${sec}s ease-in-out 0.15s`;
-            halo1.style.transform = `scale(${scale * 1.12})`;
-
-            halo2.style.transition = `transform ${sec}s ease-in-out 0.3s`;
-            halo2.style.transform = `scale(${scale * 1.24})`;
-
-            ambientGlow.style.transition = `transform ${sec}s ease-in-out, opacity ${sec}s ease-in-out`;
-            ambientGlow.style.transform = `scale(${scale > 1 ? 1.35 : 0.9})`;
-            ambientGlow.style.opacity = scale > 1 ? "0.95" : "0.45";
-
-            stepTimer = setTimeout(callback, duration);
+            timer = setTimeout(callback, duration);
         }
-
-        function toggleChime() {
-            chimeEnabled = !chimeEnabled;
-            const btn = document.getElementById('chimeBtn');
-            btn.innerText = chimeEnabled ? "🔔 Chimes: On" : "🔕 Chimes: Off";
-            btn.classList.toggle('audio-on', chimeEnabled);
-        }
-
-        function playChime(type) {
-            if (!chimeEnabled) return;
-            initAudio();
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396, 'Complete': 660 };
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
-
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.11, audioCtx.currentTime + 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.0);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 2.0);
-        }
-
-        function toggleNoise() {
-            initAudio();
-            noiseEnabled = !noiseEnabled;
-            const btn = document.getElementById('noiseBtn');
-            btn.innerText = noiseEnabled ? "🌊 Office Rain: On" : "🌊 Office Rain: Off";
-            btn.classList.toggle('audio-on', noiseEnabled);
-
-            if (noiseEnabled) {
-                const bufferSize = 2 * audioCtx.sampleRate;
-                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                let lastOut = 0.0;
-                for (let i = 0; i < bufferSize; i++) {
-                    const white = Math.random() * 2 - 1;
-                    output[i] = (lastOut + (0.02 * white)) / 1.02;
-                    lastOut = output[i];
-                    output[i] *= 2.5;
-                }
-
-                noiseNode = audioCtx.createBufferSource();
-                noiseNode.buffer = noiseBuffer;
-                noiseNode.loop = true;
-
-                noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-
-
+    </script>
+</body>
+</html>
