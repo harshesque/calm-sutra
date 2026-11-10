@@ -322,3 +322,255 @@
             <span id="cycleCounter">Cycles completed: 0</span>
             <span id="sessionRemaining">Break timer: 1:00</span>
         </div>
+        <div class="micro-prompt" id="microPrompt">"Drop your shoulders away from your ears and soften your jaw."</div>
+    </div>
+
+    <div class="shortcuts-hint zen-fade">Shortcuts: Spacebar to Start/Stop • M to Mute Chimes</div>
+
+    <script>
+        let isRunning = false;
+        let mode = 'box';
+        let targetSeconds = 60;
+        let remainingSeconds = 60;
+        let cycles = 0;
+
+        let stepTimer, phaseInterval, sessionInterval;
+        let chimeEnabled = true;
+        let noiseEnabled = false;
+        let audioCtx = null;
+        let noiseNode = null;
+        let noiseGain = null;
+
+        const circle = document.getElementById('circle');
+        const halo1 = document.getElementById('halo1');
+        const halo2 = document.getElementById('halo2');
+        const ambientGlow = document.getElementById('ambientGlow');
+        const instructionText = document.getElementById('instructionText');
+        const timerText = document.getElementById('timerText');
+        const startBtn = document.getElementById('startBtn');
+        const cycleCounter = document.getElementById('cycleCounter');
+        const sessionRemaining = document.getElementById('sessionRemaining');
+        const microPrompt = document.getElementById('microPrompt');
+
+        const prompts = [
+            "Drop your shoulders away from your ears and soften your jaw.",
+            "Unclench your hands and rest them gently on your lap.",
+            "Let your eyes drift away from the screen for a few seconds.",
+            "Notice how your body feels supported by your chair.",
+            "Take one last deep breath before returning to your inbox."
+        ];
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function setMode(selected) {
+            if (isRunning) stopSession(false);
+            mode = selected;
+            document.getElementById('boxBtn').classList.toggle('active', mode === 'box');
+            document.getElementById('relaxBtn').classList.toggle('active', mode === 'relax');
+            document.getElementById('energyBtn').classList.toggle('active', mode === 'energy');
+        }
+
+        function setDuration(secs, btn) {
+            if (isRunning) stopSession(false);
+            targetSeconds = secs;
+            remainingSeconds = secs;
+            document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateSessionDisplay();
+        }
+
+        function updateSessionDisplay() {
+            if (targetSeconds === 0) {
+                sessionRemaining.innerText = "Break timer: Open";
+            } else {
+                const m = Math.floor(remainingSeconds / 60);
+                const s = remainingSeconds % 60;
+                sessionRemaining.innerText = `Break timer: ${m}:${s < 10 ? '0' : ''}${s}`;
+            }
+        }
+
+        function toggleSession() {
+            if (isRunning) {
+                stopSession(false);
+            } else {
+                startSession();
+            }
+        }
+
+        function startSession() {
+            initAudio();
+            isRunning = true;
+            cycles = 0;
+            remainingSeconds = targetSeconds;
+            cycleCounter.innerText = "Cycles completed: 0";
+            startBtn.innerText = "End Pause";
+            document.body.classList.add('zen-active');
+            updateSessionDisplay();
+
+            if (targetSeconds > 0) {
+                sessionInterval = setInterval(() => {
+                    remainingSeconds--;
+                    updateSessionDisplay();
+                    if (remainingSeconds <= 0) {
+                        stopSession(true);
+                    }
+                }, 1000);
+            }
+
+            runCycle();
+        }
+
+        function stopSession(completedNaturally) {
+            isRunning = false;
+            clearTimeout(stepTimer);
+            clearInterval(phaseInterval);
+            clearInterval(sessionInterval);
+            document.body.classList.remove('zen-active');
+
+            resetVisuals();
+            startBtn.innerText = "Start Session";
+
+            if (completedNaturally) {
+                instructionText.innerText = "Complete";
+                timerText.innerText = "Well done";
+                playChime('Complete');
+                microPrompt.innerText = `"${prompts[Math.floor(Math.random() * prompts.length)]}"`;
+            } else {
+                instructionText.innerText = "Ready";
+                timerText.innerText = "";
+                remainingSeconds = targetSeconds;
+                updateSessionDisplay();
+            }
+        }
+
+        function resetVisuals() {
+            [circle, halo1, halo2, ambientGlow].forEach(el => {
+                el.style.transition = "transform 0.6s ease, opacity 0.6s ease";
+                el.style.transform = "scale(1)";
+            });
+            ambientGlow.style.opacity = "0.5";
+        }
+
+        function completeCycle() {
+            if (!isRunning) return;
+            cycles++;
+            cycleCounter.innerText = `Cycles completed: ${cycles}`;
+            runCycle();
+        }
+
+        function runCycle() {
+            if (!isRunning) return;
+            if (mode === 'box') {
+                step("Inhale", 4000, 1.65, () => {
+                    step("Hold", 4000, 1.65, () => {
+                        step("Exhale", 4000, 1.0, () => {
+                            step("Hold", 4000, 1.0, completeCycle);
+                        });
+                    });
+                });
+            } else if (mode === 'relax') {
+                step("Inhale", 4000, 1.65, () => {
+                    step("Hold", 7000, 1.65, () => {
+                        step("Exhale", 8000, 1.0, completeCycle);
+                    });
+                });
+            } else if (mode === 'energy') {
+                step("Inhale", 6000, 1.65, () => {
+                    step("Exhale", 2000, 1.0, completeCycle);
+                });
+            }
+        }
+
+        function step(text, duration, scale, callback) {
+            if (!isRunning) return;
+            instructionText.innerText = text;
+            playChime(text);
+
+            clearInterval(phaseInterval);
+            let secondsLeft = duration / 1000;
+            timerText.innerText = `${secondsLeft}s`;
+
+            phaseInterval = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft > 0) {
+                    timerText.innerText = `${secondsLeft}s`;
+                } else {
+                    clearInterval(phaseInterval);
+                }
+            }, 1000);
+
+            const sec = duration / 1000;
+            circle.style.transition = `transform ${sec}s ease-in-out`;
+            circle.style.transform = `scale(${scale})`;
+
+            halo1.style.transition = `transform ${sec}s ease-in-out 0.15s`;
+            halo1.style.transform = `scale(${scale * 1.12})`;
+
+            halo2.style.transition = `transform ${sec}s ease-in-out 0.3s`;
+            halo2.style.transform = `scale(${scale * 1.24})`;
+
+            ambientGlow.style.transition = `transform ${sec}s ease-in-out, opacity ${sec}s ease-in-out`;
+            ambientGlow.style.transform = `scale(${scale > 1 ? 1.35 : 0.9})`;
+            ambientGlow.style.opacity = scale > 1 ? "0.95" : "0.45";
+
+            stepTimer = setTimeout(callback, duration);
+        }
+
+        function toggleChime() {
+            chimeEnabled = !chimeEnabled;
+            const btn = document.getElementById('chimeBtn');
+            btn.innerText = chimeEnabled ? "🔔 Chimes: On" : "🔕 Chimes: Off";
+            btn.classList.toggle('audio-on', chimeEnabled);
+        }
+
+        function playChime(type) {
+            if (!chimeEnabled) return;
+            initAudio();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const freqs = { 'Inhale': 528, 'Hold': 432, 'Exhale': 396, 'Complete': 660 };
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freqs[type] || 432, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.11, audioCtx.currentTime + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.0);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 2.0);
+        }
+
+        function toggleNoise() {
+            initAudio();
+            noiseEnabled = !noiseEnabled;
+            const btn = document.getElementById('noiseBtn');
+            btn.innerText = noiseEnabled ? "🌊 Office Rain: On" : "🌊 Office Rain: Off";
+            btn.classList.toggle('audio-on', noiseEnabled);
+
+            if (noiseEnabled) {
+                const bufferSize = 2 * audioCtx.sampleRate;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    output[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = output[i];
+                    output[i] *= 2.5;
+                }
+
+                noiseNode = audioCtx.createBufferSource();
+                noiseNode.buffer = noiseBuffer;
+                noiseNode.loop = true;
+
+                noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+
+
